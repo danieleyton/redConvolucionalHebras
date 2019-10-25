@@ -1,0 +1,7 @@
+*
+!*.*
+!makefile
+*.png
+*.zip
+.vscode
+a.out
