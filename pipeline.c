@@ -10,15 +10,12 @@
 #define READ 0
 #define WRITE 1
 
-void recibirParametros(int argc, char *argv[], int* numeroImagenes, char* nombreMascara, int* umbral, int* bandera) {
-  char* nomb = malloc(sizeof(char)*20);
-  //char* nombreMascara = malloc(sizeof(char)*20);
-  //int* umbral = malloc(sizeof(int));
+void recibirParametros(int argc, char *argv[], int* numeroImagenes, char* nombreMascara, int* umbral, int* bandera, int* numeroHebras, int* bufferSize) {
   
   int c;
   *bandera = 0;
 
-  while ((c = getopt(argc, argv, "c:m:n:b")) != -1) {
+  while ((c = getopt(argc, argv, "c:m:n:bh:t:")) != -1) {
     switch (c) {
       case 'c':
         sscanf(optarg, "%d", numeroImagenes);
@@ -33,9 +30,33 @@ void recibirParametros(int argc, char *argv[], int* numeroImagenes, char* nombre
         break;
       case 'n':
         sscanf(optarg, "%d", umbral);
+        if (umbral < 0)
+        {
+          printf("El valor del umbral no puede ser negativo\n");
+          exit(1);
+        }
+        
         break;
       case 'b':
         *bandera = 1;
+        break;
+      case 'h':
+        sscanf(optarg, "%d", numeroHebras);
+        if (numeroHebras < 0)
+        {
+          printf("La cantidad de hebras no puede ser negativa\n");
+          exit(1);
+        }
+        
+        break;
+      case 't':
+        sscanf(optarg, "%d", bufferSize);
+        if (bufferSize < 0)
+        {
+          printf("El tamaño del buffer no puede ser negativo\n");
+          exit(1);
+        }
+        
         break;
       case '?':
         if (optopt == 'c') {
@@ -51,9 +72,18 @@ void recibirParametros(int argc, char *argv[], int* numeroImagenes, char* nombre
         abort();
     }
   }
-  if (*bandera == 1) {
-    //printf("%s\n", nomb);
+
+  if (argc < 6)
+  {
+    printf("La cantidad de argumentos es menor a 5\n");
   }
+  
+
+  for (int i = optind; i < argc; i++)
+  {
+    printf("Non-option argument %s\n", argv[i]);
+  }
+  
 
 }
 
@@ -62,10 +92,10 @@ void recibirParametros(int argc, char *argv[], int* numeroImagenes, char* nombre
 //salidas: un entero con valo 0
 int main(int argc, char *argv[]) {
     char nombreMascara[20];
-    int umbral, bandera, numeroImagenes;
+    int umbral, bandera, numeroImagenes, numeroHebras, bufferSize;
     int pipes[2];
     pipe(pipes);
-    recibirParametros(argc, argv, &numeroImagenes, nombreMascara, &umbral, &bandera);
+    recibirParametros(argc, argv, &numeroImagenes, nombreMascara, &umbral, &bandera, &numeroHebras, &bufferSize);
     char fdRead[100];
     char sNumeroImagenes[3];
     char sUmbral[4];
