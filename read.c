@@ -5,11 +5,11 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "estructuras.h"
+#include "shared.h"
 
-int width, height;
+/*int width, height;
 png_byte color_type;
-png_byte bit_depth;
-png_bytep *row_pointers = NULL;
+png_byte bit_depth;*/
 
 matriz* crearMatriz(int filas, int columnas)
 {
@@ -31,8 +31,10 @@ matriz* crearMatriz(int filas, int columnas)
 //entradas: String(puntero a char) que representa el nombre de la imagen que se va a leer
 //funcionamiento: Lee una imagen de tipo .png y la almacena en una matriz de png_byte en formato de escala de grises(unsigned char)
 //salidas: No tiene salida, la matriz es almacenada en una variable global
-void leer_archivo_png(char *nombreArchivo) {
-  FILE *archivo = fopen(nombreArchivo, "rb");
+void* leer_archivo_png(void *nombreArchivo) {
+  FILE *archivo = fopen((char*)nombreArchivo, "rb");
+
+  row_pointers = NULL;
 
   png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
   if(!png) abort();
@@ -43,6 +45,8 @@ void leer_archivo_png(char *nombreArchivo) {
   if(setjmp(png_jmpbuf(png))) abort();
 
   png_init_io(png, archivo);
+
+  printf("nombre: %s\n", nombreArchivo);
 
   png_read_info(png, info);
 
@@ -95,6 +99,18 @@ void leer_archivo_png(char *nombreArchivo) {
 
   png_read_image(png, row_pointers);
 
+  for(int y = 0; y < height; y++) {
+    png_bytep row = row_pointers[y];
+    for(int x = 0; x < width; x++) {
+      png_bytep px = &(row[x * 4]);
+      // Do something awesome for each pixel here...
+      //printf("algoooooo\n");
+      //printf("%4d, %4d = RGBA(%3d, %3d, %3d, %3d)\n", x, y, px[0], px[1], px[2], px[3]);
+      //printf("%3d", row_pointers[y][x]);
+    }
+    //printf("\n");
+  }
+
   fclose(archivo);
 
   png_destroy_read_struct(&png, &info, NULL);
@@ -123,7 +139,7 @@ matriz* png_a_matriz() {
 //entradas: argc la cantidad de argumentos leidos desde stdio, argv un arreglo de strings con los argumentos leidos
 //funcionamiento: es la funcion main del archivo, hace todas las llamadas a funciones necesarias
 //salidas: un entero con valo 0
-int main(int argc, char *argv[]) {
+/*int main(int argc, char *argv[]) {
   char mensaje[10];
   int numeroImagenes = atoi(argv[2]);
   int pipes[2];
@@ -138,13 +154,6 @@ int main(int argc, char *argv[]) {
   }
   
   matriz* imagen = png_a_matriz();
-  
-  int leido = read(atoi(argv[1]), mensaje, 10);
-  if (leido > 0)
-  {
-    //printf("soy el proceso read y lei: %s\n", mensaje);
-  }
-  int pid = fork();  
   if (pid == 0)
   {
     char buffer[10];
@@ -157,21 +166,6 @@ int main(int argc, char *argv[]) {
     close(pipes[1]);
     execv("./convolucion", argumentos);
   }
-  else
-  {
-    close(pipes[0]);
-    for (int i = 0; i < height; i++)
-    {
-      for (int j = 0; j < width; j++)
-      {
-        write(pipes[1], &imagen->matriz[i][j], sizeof(int));
-      }
-      
-    }
-    
-    int status;
-    wait(&status);
-  }  
 
   return 0;
-}
+}*/

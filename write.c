@@ -3,8 +3,9 @@
 #include <unistd.h>
 #include <png.h>
 #include "estructuras.h"
+#include "shared.h"
 
-matriz* crearMatriz(int filas, int columnas)
+/*matriz* crearMatriz(int filas, int columnas)
 {
     matriz* nueva = malloc(sizeof(matriz));
     nueva->filas = filas;
@@ -19,7 +20,7 @@ matriz* crearMatriz(int filas, int columnas)
 
     return nueva;
     
-}
+}*/
 
 //entradas: puntero a estructura matriz que contiene la imagen luego de haber sido clasificada
 //          puntero a png_bytep que representa el tipo de dato necesario para escribir la imagen mediante las funciones de png.h
@@ -43,7 +44,7 @@ void casteo_a_pngByte(matriz* imagen, png_bytep* pngMatriz)
 //entradas: String(puntero a char) que representa el nombre de la imagen que se va a escribir
 //funcionamiento: escribe un archivo de tipo .png a partir de una matriz de png_byte y tipos de datos png, info, definidos en la biblioteca png.h
 //salidas: No tiene salida, un archivo es escrito
-void write_png_file(char *filename, matriz* imagen) {
+void write_png_file(char *filename, png_bytep* imagen) { //matriz* imagen
   //int y;
 
   FILE *fp = fopen(filename, "wb");
@@ -63,7 +64,8 @@ void write_png_file(char *filename, matriz* imagen) {
   png_set_IHDR(
     png,
     info,
-    imagen->columnas, imagen->filas,
+    //imagen->columnas, imagen->filas,
+    width, height,
     8,
     //PNG_COLOR_TYPE_RGBA,
     PNG_COLOR_TYPE_GRAY,
@@ -73,13 +75,13 @@ void write_png_file(char *filename, matriz* imagen) {
   );
   png_write_info(png, info);
 
-  png_bytep* row_pointers = malloc(sizeof(png_bytep)*imagen->filas);
-  for (int i = 0; i < imagen->filas; i++)
+  png_bytep* row_pointers = malloc(sizeof(png_bytep)*height);
+  for (int i = 0; i < height; i++)
   {
       row_pointers[i] = malloc(png_get_rowbytes(png,info));
   }
   
-  casteo_a_pngByte(imagen, row_pointers);
+  //casteo_a_pngByte(imagen, row_pointers);
 
   // To remove the alpha channel for PNG_COLOR_TYPE_RGB format,
   // Use png_set_filler().
@@ -87,10 +89,10 @@ void write_png_file(char *filename, matriz* imagen) {
 
   if (!row_pointers) abort();
 
-  png_write_image(png, row_pointers);
+  png_write_image(png, imagen);
   png_write_end(png, NULL);
 
-  for(int y = 0; y < imagen->filas; y++) {
+  for(int y = 0; y < height; y++) {
     free(row_pointers[y]);
   }
   free(row_pointers);
@@ -103,7 +105,7 @@ void write_png_file(char *filename, matriz* imagen) {
 //entradas: argc la cantidad de argumentos leidos desde stdio, argv un arreglo de strings con los argumentos leidos
 //funcionamiento: es la funcion main del archivo, hace todas las llamadas a funciones necesarias
 //salidas: un entero con valo 0
-int main(int argc, char const *argv[])
+/*int main(int argc, char const *argv[])
 {
     int filas = atoi(argv[2]);
     int columnas = atoi(argv[3]);
@@ -131,4 +133,4 @@ int main(int argc, char const *argv[])
     
     
     return 0;
-}
+}*/

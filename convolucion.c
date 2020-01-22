@@ -4,8 +4,9 @@
 #include <sys/wait.h>
 #include <string.h>
 #include "estructuras.h"
+#include "funciones.h"
 
-matriz* crearMatriz(int filas, int columnas)
+/*matriz* crearMatriz(int filas, int columnas)
 {
     matriz* nueva = malloc(sizeof(matriz));
     nueva->filas = filas;
@@ -20,10 +21,11 @@ matriz* crearMatriz(int filas, int columnas)
 
     return nueva;
     
-}
+}*/
 
 matriz* leerFiltro(char* nombreFiltro)
 {
+    printf("is it here ?\n");
     FILE* archivo = fopen(nombreFiltro, "r");
 
     if (!archivo)
@@ -46,7 +48,7 @@ matriz* leerFiltro(char* nombreFiltro)
         filtro->matriz[i][2] = tercero;
     }
 
-    fclose(archivo);
+    fclose(archivo);    
 
     return filtro;
 }
@@ -95,7 +97,7 @@ matriz* convolucion(matriz* imagen, matriz* filtro)
 //entradas: argc la cantidad de argumentos leidos desde stdio, argv un arreglo de strings con los argumentos leidos
 //funcionamiento: es la funcion main del archivo, hace todas las llamadas a funciones necesarias
 //salidas: un entero con valo 0
-int main(int argc, char const *argv[])
+/*int main(int argc, char const *argv[])
 {
     //matriz* a, *b;
     char nombreFiltro[20];
@@ -144,7 +146,7 @@ int main(int argc, char const *argv[])
 
             printf("\n");
             
-        }*/
+        }* /
         
     }
     else
@@ -189,4 +191,4 @@ int main(int argc, char const *argv[])
     int status;
     wait(&status);
     return 0;
-}
+}*/
